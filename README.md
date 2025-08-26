@@ -12,11 +12,11 @@ It provides:
 
 ## ⚙️ Tech Stack
 
-* **Backend Framework:** Node.js + Express.js
-* **AI Integration:** Google Gemini API (`@google/generative-ai`)
-* **Gold Price Data:** [GoldAPI.io](https://www.goldapi.io/) (free API)
-* **Database:** SQLite (simple, but can switch to PostgreSQL/MySQL)
-* **Deployment:** Render / Railway / Vercel
+- **Backend Framework:** Node.js + Express.js
+- **AI Integration:** Google Gemini API (`@google/generative-ai`)
+- **Gold Price Data:** [GoldAPI.io](https://www.goldapi.io/) (free API)
+- **Database:** SQLite (simple, but can switch to PostgreSQL/MySQL)
+- **Deployment:** Render / Railway / Vercel
 
 ---
 
@@ -26,10 +26,10 @@ It provides:
 
 **Endpoint:** `POST /api/gold-advisor`
 
-* Takes a user question.
-* Uses Gemini to generate an answer.
-* If question is about gold → factual answer + nudge to invest.
-* If question is not about gold → still answer, but add a gold investment suggestion.
+- Takes a user question.
+- Uses Gemini to generate an answer.
+- If question is about gold → factual answer + nudge to invest.
+- If question is not about gold → still answer, but add a gold investment suggestion.
 
 **Request:**
 
@@ -54,10 +54,10 @@ It provides:
 
 **Endpoint:** `POST /api/gold-purchase`
 
-* Lets users invest an amount (₹10 or more).
-* Fetches **live gold price (per gram)**.
-* Calculates purchased grams/milligrams.
-* Saves purchase in database.
+- Lets users invest an amount (₹10 or more).
+- Fetches **live gold price (per gram)**.
+- Calculates purchased grams/milligrams.
+- Saves purchase in database.
 
 **Request:**
 
@@ -99,14 +99,14 @@ It provides:
 
 ### `gold_purchases` table
 
-| Column            | Type     | Description                 |
-| ----------------- | -------- | --------------------------- |
-| id                | INTEGER  | Primary Key                 |
-| user\_id          | INTEGER  | Foreign key → users.id      |
-| amount            | DECIMAL  | Amount invested (₹)         |
-| gold\_quantity    | DECIMAL  | Gold bought (grams)         |
-| gold\_price\_gram | DECIMAL  | Gold price at purchase time |
-| timestamp         | DATETIME | Purchase time               |
+| Column          | Type     | Description                 |
+| --------------- | -------- | --------------------------- |
+| id              | INTEGER  | Primary Key                 |
+| user_id         | INTEGER  | Foreign key → users.id      |
+| amount          | DECIMAL  | Amount invested (₹)         |
+| gold_quantity   | DECIMAL  | Gold bought (grams)         |
+| gold_price_gram | DECIMAL  | Gold price at purchase time |
+| timestamp       | DATETIME | Purchase time               |
 
 ---
 
@@ -116,7 +116,7 @@ It provides:
 
 ```mermaid
 flowchart TD
-    A[User asks question] --> B[Gold Advisor API (Gemini)]
+    A[User asks question] --> B[Gold Advisor API - Gemini]
     B -->|Answer + Suggestion| C[User chooses to invest]
     C --> D[Gold Purchase API]
     D --> E[Fetch live gold price]
@@ -216,7 +216,7 @@ curl -X POST http://localhost:4000/api/gold-purchase \
 
 ## ✅ Deliverables
 
-* Two working APIs (advisor + purchase).
-* Database integration with gold purchase records.
-* Deployment link for live testing.
-* README (this file) with instructions + diagrams.
+- Two working APIs (advisor + purchase).
+- Database integration with gold purchase records.
+- Deployment link for live testing.
+- README (this file) with instructions + diagrams.
