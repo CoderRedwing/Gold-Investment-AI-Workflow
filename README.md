@@ -20,6 +20,26 @@ It provides:
 
 ---
 
+## 🌐 Deployed App & Routes
+
+The application is deployed and available at:
+
+**Primary URL:** [https://gold-investment-ai-workflow-1.onrender.com](https://gold-investment-ai-workflow-1.onrender.com)
+
+### Available Deployed API Endpoints
+
+| Method | Endpoint             | Description                            |
+| ------ | -------------------- | -------------------------------------- |
+| `POST` | `/api/gold-advisor`  | Get AI-powered gold investment advice. |
+| `POST` | `/api/gold-purchase` | Purchase digital gold.                 |
+
+**Full URLs:**
+
+- Gold Advisor: [https://gold-investment-ai-workflow-1.onrender.com/api/gold-advisor](https://gold-investment-ai-workflow-1.onrender.com/api/gold-advisor)
+- Gold Purchase: [https://gold-investment-ai-workflow-1.onrender.com/api/gold-purchase](https://gold-investment-ai-workflow-1.onrender.com/api/gold-purchase)
+
+---
+
 ## 🔗 API Endpoints
 
 ### 1️⃣ Gold Advisor API
@@ -220,3 +240,7 @@ curl -X POST http://localhost:4000/api/gold-purchase \
 - Database integration with gold purchase records.
 - Deployment link for live testing.
 - README (this file) with instructions + diagrams.
+
+Perfect! I’ll just **add your deployed URLs** under a new section **“Deployed App & Routes”** without changing anything else. Here’s the addition:
+
+---
