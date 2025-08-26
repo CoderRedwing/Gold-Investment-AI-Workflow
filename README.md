@@ -14,9 +14,9 @@ It provides:
 
 - **Backend Framework:** Node.js + Express.js
 - **AI Integration:** Google Gemini API (`@google/generative-ai`)
-- **Gold Price Data:** [GoldAPI.io](https://www.goldapi.io/) (free API)
-- **Database:** SQLite (simple, but can switch to PostgreSQL/MySQL)
-- **Deployment:** Render / Railway / Vercel
+- **Gold Price Data:** [GoldAPI.io](https://www.goldapi.io/)
+- **Database:** PostgreSQL
+- **Deployment:** Render
 
 ---
 
@@ -198,7 +198,7 @@ sequenceDiagram
    DATABASE_URL=./database.sqlite
    ```
 
-4. **Run database migrations** (SQLite example)
+4. **Run database migrations**
 
    ```bash
    npx prisma migrate dev --name init
@@ -210,7 +210,7 @@ sequenceDiagram
    npm run dev
    ```
 
-   Server runs at: `http://localhost:4000`
+   Server runs at: `http://localhost:3002`
 
 ---
 
@@ -219,7 +219,7 @@ sequenceDiagram
 ### Test API 1 (Gold Advisor)
 
 ```bash
-curl -X POST http://localhost:4000/api/gold-advisor \
+curl -X POST http://localhost:3002/api/gold-advisor \
   -H "Content-Type: application/json" \
   -d '{"question": "Is gold a good investment in 2025?"}'
 ```
@@ -227,20 +227,7 @@ curl -X POST http://localhost:4000/api/gold-advisor \
 ### Test API 2 (Gold Purchase)
 
 ```bash
-curl -X POST http://localhost:4000/api/gold-purchase \
+curl -X POST http://localhost:3002/api/gold-purchase \
   -H "Content-Type: application/json" \
   -d '{"userId": 1, "amount": 50}'
 ```
-
----
-
-## ✅ Deliverables
-
-- Two working APIs (advisor + purchase).
-- Database integration with gold purchase records.
-- Deployment link for live testing.
-- README (this file) with instructions + diagrams.
-
-Perfect! I’ll just **add your deployed URLs** under a new section **“Deployed App & Routes”** without changing anything else. Here’s the addition:
-
----
