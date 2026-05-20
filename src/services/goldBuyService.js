@@ -1,69 +1,39 @@
-const axios = require("axios");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
-const fetchGoldPrice = async () => {
-  try {
-    const response = await axios.get("https://api.metalpriceapi.com/v1/latest", {
-      params: {
-        api_key: process.env.METALS_API_KEY,
-        base: "INR",               
-        currencies: "XAU,XAG,EUR"
-      }
-    });
-
-    const rates = response.data.rates;
-
-    let pricePerOunceINR;
-    if (rates["INRXAU"]) {
-      pricePerOunceINR = rates["INRXAU"];
-    } else if (rates["XAU"]) {
-      pricePerOunceINR = 1 / rates["XAU"];
-    } else {
-      throw new Error("Gold rate not found in API response");
-    }
-
-    const pricePerGram = pricePerOunceINR / 31.1035;
-
-    return pricePerGram;
-  } catch (error) {
-    console.error("Error fetching gold price:", error.response?.data || error.message);
-    throw new Error("Unable to fetch gold price");
-  }
-};
+const prisma = require("../lib/prisma");
+const { fetchGoldPrice } = require("../utils/goldPrice");
+const { dispatchWebhook } = require("../utils/webhook");
 
 const purchaseGold = async (userId, amountInINR) => {
-  try {
-    const pricePerGram = await fetchGoldPrice();
-    const goldInGrams = +(amountInINR / pricePerGram).toFixed(4); 
-    const transaction = await prisma.goldTransaction.create({
-      data: {
-        userId,
-        amountInINR,
-        goldInGrams,
-        pricePerGram
-      }
-    });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found");
 
-    return {
-      success: true,
-      message: "Gold purchased successfully",
-      data: {
-        transactionId: transaction.id,
-        goldInGrams,
-        amountSpent: amountInINR,
-        pricePerGram,
-        createdAt: transaction.createdAt
-      }
-    };
-  } catch (error) {
-    console.error("BuyGold Error:", error.message);
-    return {
-      success: false,
-      message: "Unable to purchase gold",
-      error: error.message
-    };
-  }
+  const pricePerGram = await fetchGoldPrice();
+  const goldInGrams = parseFloat((amountInINR / pricePerGram).toFixed(4));
+
+  const [transaction] = await prisma.$transaction([
+    prisma.goldTransaction.create({
+      data: { userId, type: "BUY", amountInINR, goldInGrams, pricePerGram },
+    }),
+    prisma.goldWallet.upsert({
+      where: { userId },
+      update: {
+        totalGrams: { increment: goldInGrams },
+        totalInvested: { increment: amountInINR },
+      },
+      create: { userId, totalGrams: goldInGrams, totalInvested: amountInINR },
+    }),
+  ]);
+
+  const payload = {
+    transactionId: transaction.id,
+    goldInGrams,
+    amountSpent: amountInINR,
+    pricePerGram,
+    createdAt: transaction.createdAt,
+  };
+
+  dispatchWebhook(userId, "gold.purchased", payload);
+
+  return { success: true, message: "Gold purchased successfully", data: payload };
 };
 
 module.exports = { purchaseGold };

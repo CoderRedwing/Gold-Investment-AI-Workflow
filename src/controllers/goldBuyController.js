@@ -2,22 +2,17 @@ const { purchaseGold } = require("../services/goldBuyService");
 
 const buyGold = async (req, res) => {
   try {
-    const { userId, amountInINR } = req.body;
+    const userId = req.user.userId;
+    const { amountInINR } = req.body;
 
-    if (!userId || !amountInINR) {
-      return res.status(400).json({ success: false, message: "Missing userId or amountInINR" });
-    }
-
-    if (amountInINR < 1) {
-      return res.status(400).json({ success: false, message: "Minimum investment is ₹1" });
-    }
+    if (!amountInINR) return res.status(400).json({ success: false, message: "amountInINR is required" });
+    if (amountInINR < 10) return res.status(400).json({ success: false, message: "Minimum investment is ₹10" });
 
     const result = await purchaseGold(userId, amountInINR);
     return res.json(result);
-
-  } catch (error) {
-    console.error("BuyGold Error:", error.message);
-    return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+  } catch (err) {
+    console.error("BuyGold Error:", err.message);
+    return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
   }
 };
 

@@ -1,8 +1,7 @@
 const express = require("express");
-const { buyGold } = require("../controllers/goldBuyController");
+const { downloadReceipt } = require("../controllers/receiptController");
 const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
-router.post("/", authMiddleware, buyGold);
-
+router.get("/:txId", authMiddleware, downloadReceipt);
 module.exports = router;

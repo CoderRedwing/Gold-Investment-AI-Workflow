@@ -7,11 +7,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model GoldTransaction {
+model User {
+  id           Int               @id @default(autoincrement())
+  name         String
+  email        String            @unique
+  password     String
+  phone        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  wallet       GoldWallet?
+  transactions GoldTransaction[]
+  alerts       PriceAlert[]
+  sipPlans     SIPPlan[]
+  webhooks     Webhook[]
+}
+
+model GoldWallet {
   id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  totalGrams    Float    @default(0)
+  totalInvested Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model GoldTransaction {
+  id            Int             @id @default(autoincrement())
   userId        Int
+  type          TransactionType @default(BUY)
   amountInINR   Float
   goldInGrams   Float
   pricePerGram  Float
-  createdAt     DateTime @default(now())
+  status        TxStatus        @default(COMPLETED)
+  notes         String?
+  createdAt     DateTime        @default(now())
+
+  user          User            @relation(fields: [userId], references: [id])
+}
+
+model PriceSnapshot {
+  id           Int      @id @default(autoincrement())
+  pricePerGram Float
+  source       String   @default("metalpriceapi")
+  recordedAt   DateTime @default(now())
+}
+
+model PriceAlert {
+  id          Int            @id @default(autoincrement())
+  userId      Int
+  targetPrice Float
+  direction   AlertDirection
+  notifyVia   String         @default("email")
+  triggered   Boolean        @default(false)
+  triggeredAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  user        User           @relation(fields: [userId], references: [id])
+}
+
+model SIPPlan {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  amountInINR Float
+  frequency   SIPFrequency
+  dayOfWeek   Int?
+  dayOfMonth  Int?
+  isActive    Boolean      @default(true)
+  nextRunAt   DateTime
+  lastRunAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id])
+  executions  SIPExecution[]
+}
+
+model SIPExecution {
+  id            Int      @id @default(autoincrement())
+  sipPlanId     Int
+  transactionId Int?
+  status        TxStatus
+  errorMessage  String?
+  executedAt    DateTime @default(now())
+
+  sipPlan       SIPPlan  @relation(fields: [sipPlanId], references: [id])
+}
+
+model Webhook {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  url       String
+  secret    String
+  events    String[]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum TransactionType {
+  BUY
+  SELL
+}
+
+enum TxStatus {
+  COMPLETED
+  FAILED
+  PENDING
+}
+
+enum AlertDirection {
+  ABOVE
+  BELOW
+}
+
+enum SIPFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
 }
